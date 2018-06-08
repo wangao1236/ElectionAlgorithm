@@ -10,7 +10,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World! Election Algorithm." );
+        System.out.println( "Hello World! Ring Election Algorithm." );
         Node.getInstance().start();
     }
 }
