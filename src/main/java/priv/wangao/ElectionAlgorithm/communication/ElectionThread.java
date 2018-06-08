@@ -19,10 +19,21 @@ public class ElectionThread implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		Node.getInstance().lock.lock();
-		
-		try {
+//		//Node.getInstance().lock.lock();
+//		
+//		try {
 			while (true) {
+				System.err.println("111111");
+				while (Node.getInstance().getStatus() != StatusType.Electing) {
+					System.err.println("Waiting for electing");
+					try {
+						Thread.sleep(1000 * Node.getInstance().nodeAddrListSize);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					//Node.getInstance().electCon.await();
+					//System.err.println("Start electing");
+				}
 				
 				try {
 					Thread.sleep(1000 * Node.getInstance().nodeAddrListSize);
@@ -30,11 +41,7 @@ public class ElectionThread implements Runnable {
 					e.printStackTrace();
 				}
 				
-				while (Node.getInstance().getStatus() != StatusType.Electing) {
-					Node.getInstance().electCon.await();
-				}
-				
-				System.out.println("Start Electing : " + electionMsg);
+				System.out.println("Start Electing : " + Node.getInstance().getElectionMsg());
 				String[] split = electionMsg.split(",");
 				int leader = Node.getInstance().nodeID;
 				for (String str: split) {
@@ -67,12 +74,12 @@ public class ElectionThread implements Runnable {
 				jsonObject.put("msg", electionMsg + "," + Node.getInstance().nodeID);
 				
 			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			Node.getInstance().lock.unlock();
-		}
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} finally {
+//			//Node.getInstance().lock.unlock();
+//		}
 	}
 
 }

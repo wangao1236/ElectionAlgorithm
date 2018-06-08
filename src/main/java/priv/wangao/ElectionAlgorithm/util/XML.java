@@ -29,7 +29,7 @@ public class XML {
 				ipportList.add(e.getText());
 			}
 			conf.put("nodeList", ipportList);
-			conf.put("nodeID", "1");//root.element("nodeID").getText());
+			conf.put("nodeID", "2");//root.element("nodeID").getText());
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

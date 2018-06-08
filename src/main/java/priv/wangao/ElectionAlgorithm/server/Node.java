@@ -17,7 +17,7 @@ import priv.wangao.ElectionAlgorithm.util.XML;
 public class Node {
 	
 	private static final Node instance = new Node();
-	private String electionMsg = null;
+	private String electionMsg = "";
 	private int leaderID;
 	private int nextID = -1;
 	
@@ -53,7 +53,7 @@ public class Node {
 		new Thread(new WelcomeThread()).start();
 		new Thread(new HelloThread()).start();
 		new Thread(new ElectionThread()).start();
-		new Thread(new MessageQueueThread()).start();
+		//new Thread(new MessageQueueThread()).start();
 	}
 	
 	public static Node getInstance() {

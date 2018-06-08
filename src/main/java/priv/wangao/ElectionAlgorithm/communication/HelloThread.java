@@ -16,23 +16,31 @@ public class HelloThread implements Runnable {
 
 	public void run() {
 		// TODO Auto-generated method stub
-		Node.getInstance().lock.lock();
-		try {
+//		Node.getInstance().lock.lock();
+//		try {
 			int ID = Node.getInstance().nodeID;
 			String[] split = Node.getInstance().getAddrByID(ID).split(":");
 			String IP = split[0];
 			int Port = Integer.parseInt(split[1]);
 			
 			while (true) {
+				System.err.println("22222");
+				
+				while (Node.getInstance().getStatus() == StatusType.Electing) {
+					System.err.println("Waiting for running");
+					try {
+						Thread.sleep(1000 * Node.getInstance().nodeAddrListSize);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+//					Node.getInstance().helloCon.await();
+//					System.err.println("Start running");
+				}
 				
 				try {
 					Thread.sleep(1000 * Node.getInstance().nodeAddrListSize);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-				}
-				
-				while (Node.getInstance().getStatus() == StatusType.Electing) {
-					Node.getInstance().helloCon.await();
 				}
 				
 				int nextID = Node.getInstance().getNextID(ID);
@@ -99,12 +107,12 @@ public class HelloThread implements Runnable {
 				
 				//SocketList.getInstance().rebornHelloSockets();
 			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			Node.getInstance().lock.unlock();
-		}
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} finally {
+//			Node.getInstance().lock.unlock();
+//		}
 	}
 
 }
