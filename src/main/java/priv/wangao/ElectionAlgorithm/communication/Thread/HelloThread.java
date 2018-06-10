@@ -1,4 +1,4 @@
-package priv.wangao.ElectionAlgorithm.communication;
+package priv.wangao.ElectionAlgorithm.communication.Thread;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
+import priv.wangao.ElectionAlgorithm.communication.MySocket;
+import priv.wangao.ElectionAlgorithm.communication.ThreadPool;
+import priv.wangao.ElectionAlgorithm.communication.basicTask.SendTask;
 import priv.wangao.ElectionAlgorithm.constant.MessageType;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
 import priv.wangao.ElectionAlgorithm.server.Node;
@@ -17,9 +20,8 @@ public class HelloThread implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		int ID = Node.getInstance().nodeID;
-		String[] split = Node.getInstance().getAddrByID(ID).split(":");
-		String IP = split[0];
-		int Port = Integer.parseInt(split[1]);
+		String IP = Node.getInstance().nodeIP;
+		int Port = Node.getInstance().nodePort;
 		
 		while (true) {
 			try {
@@ -39,22 +41,18 @@ public class HelloThread implements Runnable {
 				
 				int nextID = Node.getInstance().getNextID(ID);
 				int firstNextID = nextID;
-				split = Node.getInstance().getAddrByID(nextID).split(":");
+				String[] split = Node.getInstance().getAddrByID(nextID).split(":");
 				String nextIP = split[0];
 				int nextPort = Integer.parseInt(split[1]);
 				try {
 					Socket socket = new Socket(nextIP, nextPort);
 					MySocket ms = new MySocket(socket);
-					JSONObject jsonObject = new JSONObject();
+					SendTask sendTask = null;
 					if (Node.getInstance().getStatus() == StatusType.RUNNING) {
-						jsonObject.put("type", MessageType.HELLO);
-						jsonObject.put("msg", Node.getInstance().getLeaderID());
+						sendTask = new SendTask(ms, JSON.getHelloMsg().toString());
 					} else if (Node.getInstance().getStatus() == StatusType.WAITING) {
-						jsonObject.put("type", MessageType.ELECTION);
-						jsonObject.put("msg", Node.getInstance().getElectionMsg());
+						sendTask = new SendTask(ms, JSON.getElectionMsg(Node.getInstance().getElectionMsg()).toString());
 					}
-					jsonObject.put("addr", Node.getInstance().nodeIP+":"+Node.getInstance().nodePort);
-					SendTask sendTask = new SendTask(ms, jsonObject.toString());
 					ThreadPool.getInstance().add_tasks(sendTask);
 					Node.getInstance().helloCon.await();
 				} catch (IOException e) {
@@ -68,17 +66,13 @@ public class HelloThread implements Runnable {
 							Socket socket = new Socket(nextIP, nextPort);
 							MySocket ms = new MySocket(socket);
 							if (nextID != ID) {
-								JSONObject jsonObject = new JSONObject();
-								jsonObject.put("addr", IP + ":" + Port);
+								SendTask sendTask = null;
 								if (firstNextID == Node.getInstance().getLeaderID()) {
-									jsonObject.put("type", MessageType.ELECTION);
-									jsonObject.put("msg", Node.getInstance().nodeID);
 									Node.getInstance().setStatus(StatusType.WAITING);
+									sendTask = new SendTask(ms, JSON.getElectionMsg(Integer.toString(Node.getInstance().nodeID)).toString());
 								} else {
-									jsonObject.put("type", MessageType.HELLO);
-									jsonObject.put("msg", Node.getInstance().getLeaderID());
+									sendTask = new SendTask(ms, JSON.getHelloMsg().toString());
 								}
-								SendTask sendTask = new SendTask(ms, jsonObject.toString());
 								ThreadPool.getInstance().add_tasks(sendTask);
 								Node.getInstance().helloCon.await();
 								break;

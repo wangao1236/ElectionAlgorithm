@@ -1,6 +1,8 @@
-package priv.wangao.ElectionAlgorithm.communication;
+package priv.wangao.ElectionAlgorithm.communication.basicTask;
 
 import java.io.IOException;
+
+import priv.wangao.ElectionAlgorithm.communication.MySocket;
 
 public class SendTask implements Runnable {
 	

@@ -1,6 +1,7 @@
-package priv.wangao.ElectionAlgorithm.communication;
+package priv.wangao.ElectionAlgorithm.communication.Thread;
 
 import net.sf.json.JSONObject;
+import priv.wangao.ElectionAlgorithm.communication.MessageQueue;
 import priv.wangao.ElectionAlgorithm.constant.MessageType;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
 import priv.wangao.ElectionAlgorithm.server.Node;
@@ -15,7 +16,7 @@ public class MessageQueueThread implements Runnable {
 			newMsg = MessageQueue.getInstance().getMessage();
 			jsonObject = JSONObject.fromObject(newMsg);
 			boolean isNormal = false;
-			System.err.println("Current Message" + newMsg);
+			System.err.println("Current Message: " + newMsg);
 			Node.getInstance().lock.lock();
 			try {
 				decideStatus((String)jsonObject.get("type"), jsonObject);	
@@ -78,9 +79,6 @@ public class MessageQueueThread implements Runnable {
 				break;
 		}
 		
-	}
-	
-	public void work() {
 	}
 
 }

@@ -1,12 +1,16 @@
-package priv.wangao.ElectionAlgorithm.communication;
+package priv.wangao.ElectionAlgorithm.communication.Thread;
 
 import java.io.IOException;
 import java.net.Socket;
 
 import net.sf.json.JSONObject;
+import priv.wangao.ElectionAlgorithm.communication.MySocket;
+import priv.wangao.ElectionAlgorithm.communication.ThreadPool;
+import priv.wangao.ElectionAlgorithm.communication.basicTask.SendTask;
 import priv.wangao.ElectionAlgorithm.constant.MessageType;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
 import priv.wangao.ElectionAlgorithm.server.Node;
+import priv.wangao.ElectionAlgorithm.util.JSON;
 
 public class ElectionThread implements Runnable {
 
@@ -23,12 +27,11 @@ public class ElectionThread implements Runnable {
 			
 			Node.getInstance().lock.lock();
 			try {
-				while (Node.getInstance().getStatus() != StatusType.ELECTING) {
-					System.err.println("Waiting for electing");
-					Node.getInstance().electCon.await();
-					System.err.println("Start electing");
-				}
-				
+				System.err.println("Waiting for electing");
+				Node.getInstance().electCon.await();
+				System.err.println("Start electing");
+			
+					
 				System.out.println("Start Electing : " + Node.getInstance().getElectionMsg());
 				String[] split = Node.getInstance().getElectionMsg().split(",");
 				int leader = Node.getInstance().nodeID;
@@ -45,11 +48,7 @@ public class ElectionThread implements Runnable {
 						System.out.println("Toward " + IP + ":" + Port);
 						Socket socket = new Socket(IP, Port);
 						MySocket ms = new MySocket(socket);
-						JSONObject jsonObject = new JSONObject();
-						jsonObject.put("type", MessageType.INFORMATION);
-						jsonObject.put("addr", Node.getInstance().nodeIP + ":" + Node.getInstance().nodePort);
-						jsonObject.put("msg", leader);
-						SendTask sendTask = new SendTask(ms, jsonObject.toString());
+						SendTask sendTask = new SendTask(ms, JSON.getInformationMsg(Integer.toString(leader)).toString());
 						ThreadPool.getInstance().add_tasks(sendTask);
 						Node.getInstance().electCon.await();
 					} catch (IOException e) {
@@ -65,5 +64,4 @@ public class ElectionThread implements Runnable {
 			}	
 		}
 	}
-
 }

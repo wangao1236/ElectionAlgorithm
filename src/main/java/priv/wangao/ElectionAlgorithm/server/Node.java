@@ -9,10 +9,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.Validate;
 
-import priv.wangao.ElectionAlgorithm.communication.ElectionThread;
-import priv.wangao.ElectionAlgorithm.communication.HelloThread;
-import priv.wangao.ElectionAlgorithm.communication.MessageQueueThread;
 import priv.wangao.ElectionAlgorithm.communication.WelcomeThread;
+import priv.wangao.ElectionAlgorithm.communication.Thread.ElectionThread;
+import priv.wangao.ElectionAlgorithm.communication.Thread.HelloThread;
+import priv.wangao.ElectionAlgorithm.communication.Thread.MessageQueueThread;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
 import priv.wangao.ElectionAlgorithm.util.XML;
 

@@ -1,7 +1,10 @@
-package priv.wangao.ElectionAlgorithm.communication;
+package priv.wangao.ElectionAlgorithm.communication.basicTask;
 
 import java.io.IOException;
 import java.util.List;
+
+import priv.wangao.ElectionAlgorithm.communication.MessageQueue;
+import priv.wangao.ElectionAlgorithm.communication.MySocket;
 
 public class RecvTask implements Runnable {
 	
