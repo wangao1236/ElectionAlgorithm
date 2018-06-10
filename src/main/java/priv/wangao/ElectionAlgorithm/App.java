@@ -1,6 +1,6 @@
 package priv.wangao.ElectionAlgorithm;
 
-import priv.wangao.ElectionAlgorithm.server.Node;
+import priv.wangao.ElectionAlgorithm.entity.Node;
 import priv.wangao.ElectionAlgorithm.util.XML;
 
 /**

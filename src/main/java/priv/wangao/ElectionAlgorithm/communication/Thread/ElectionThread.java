@@ -9,7 +9,7 @@ import priv.wangao.ElectionAlgorithm.communication.ThreadPool;
 import priv.wangao.ElectionAlgorithm.communication.basicTask.SendTask;
 import priv.wangao.ElectionAlgorithm.constant.MessageType;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
-import priv.wangao.ElectionAlgorithm.server.Node;
+import priv.wangao.ElectionAlgorithm.entity.Node;
 import priv.wangao.ElectionAlgorithm.util.JSON;
 
 public class ElectionThread implements Runnable {

@@ -1,4 +1,4 @@
-package priv.wangao.ElectionAlgorithm.server;
+package priv.wangao.ElectionAlgorithm.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,6 @@ public class Node {
 	public final int nodeID;
 	public final String nodeIP;
 	public final int nodePort;
-	public final Server server;
 	private volatile StatusType status;
 	
 	@SuppressWarnings("unchecked")
@@ -47,7 +46,6 @@ public class Node {
 		String[] split = this.nodeAddrList.get(nodeID).split(":");
 		this.nodeIP = split[0];
 		this.nodePort = Integer.parseInt(split[1]);
-		this.server = new Server(0);
 		this.leaderID = this.nodeID;
 		this.status = StatusType.RUNNING;
 	}	

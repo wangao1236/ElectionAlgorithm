@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import priv.wangao.ElectionAlgorithm.communication.basicTask.RecvTask;
-import priv.wangao.ElectionAlgorithm.server.Node;
+import priv.wangao.ElectionAlgorithm.entity.Node;
 
 public class WelcomeThread implements Runnable {
 

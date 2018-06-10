@@ -7,7 +7,7 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import priv.wangao.ElectionAlgorithm.constant.MessageType;
-import priv.wangao.ElectionAlgorithm.server.Node;
+import priv.wangao.ElectionAlgorithm.entity.Node;
 
 public class JSON {
 

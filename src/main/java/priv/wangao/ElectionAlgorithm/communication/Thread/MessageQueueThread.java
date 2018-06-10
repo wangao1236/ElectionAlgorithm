@@ -4,7 +4,7 @@ import net.sf.json.JSONObject;
 import priv.wangao.ElectionAlgorithm.communication.MessageQueue;
 import priv.wangao.ElectionAlgorithm.constant.MessageType;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
-import priv.wangao.ElectionAlgorithm.server.Node;
+import priv.wangao.ElectionAlgorithm.entity.Node;
 
 public class MessageQueueThread implements Runnable {
 
