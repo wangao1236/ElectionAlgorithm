@@ -38,6 +38,7 @@ public class HelloThread implements Runnable {
 				}
 				
 				int nextID = Node.getInstance().getNextID(ID);
+				int firstNextID = nextID;
 				split = Node.getInstance().getAddrByID(nextID).split(":");
 				String nextIP = split[0];
 				int nextPort = Integer.parseInt(split[1]);
@@ -68,10 +69,15 @@ public class HelloThread implements Runnable {
 							MySocket ms = new MySocket(socket);
 							if (nextID != ID) {
 								JSONObject jsonObject = new JSONObject();
-								jsonObject.put("type", MessageType.ELECTION);
 								jsonObject.put("addr", IP + ":" + Port);
-								jsonObject.put("msg", Node.getInstance().nodeID);
-								Node.getInstance().setStatus(StatusType.WAITING);
+								if (firstNextID == Node.getInstance().getLeaderID()) {
+									jsonObject.put("type", MessageType.ELECTION);
+									jsonObject.put("msg", Node.getInstance().nodeID);
+									Node.getInstance().setStatus(StatusType.WAITING);
+								} else {
+									jsonObject.put("type", MessageType.HELLO);
+									jsonObject.put("msg", Node.getInstance().getLeaderID());
+								}
 								SendTask sendTask = new SendTask(ms, jsonObject.toString());
 								ThreadPool.getInstance().add_tasks(sendTask);
 								Node.getInstance().helloCon.await();
