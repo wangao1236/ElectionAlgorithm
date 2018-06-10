@@ -16,10 +16,16 @@ public class MessageQueue {
 		return instance;
 	}
 	
+	public int getSize() {
+		return mq.size();
+	}
+	
 	public String getMessage() {
 		String message = null;
 		try {
+			//System.out.println("Before taking");
 			message = mq.take();
+			//System.out.println("After taking");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

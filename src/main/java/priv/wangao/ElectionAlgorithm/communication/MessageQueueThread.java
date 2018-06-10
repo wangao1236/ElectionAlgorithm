@@ -12,50 +12,71 @@ public class MessageQueueThread implements Runnable {
 		String newMsg = null;
 		JSONObject jsonObject = null;
 		while (true) {
-			System.err.println("22222");
 			newMsg = MessageQueue.getInstance().getMessage();
 			jsonObject = JSONObject.fromObject(newMsg);
 			boolean isNormal = false;
-			System.err.println(newMsg);
-			decideStatus((String)jsonObject.get("type"), jsonObject);
-			//System.err.println("Now Node msg: " + Node.getInstance().getElectionMsg());
-				
+			System.err.println("Current Message" + newMsg);
+			Node.getInstance().lock.lock();
+			try {
+				decideStatus((String)jsonObject.get("type"), jsonObject);	
+			} finally {
+				Node.getInstance().lock.unlock();
+			}
 		}
 	}
 	
 	private synchronized void decideStatus(String statusType, JSONObject jsonObject) {
-//		Node.getInstance().lock.lock();
-//		try {
-			switch (statusType) {
-				case "HELLO":	
-					//Node.getInstance().helloCon.signalAll();
-					Node.getInstance().setStatus(StatusType.RUNNING);
-					break;
-				case "ELECTION":	
-					if (Node.getInstance().getStatus() == StatusType.RUNNING) {
+		switch (statusType) {
+			case "HELLO":	
+				int myLeaderID = Node.getInstance().getLeaderID();
+				int lastLeaderID = jsonObject.getInt("msg");
+				if (lastLeaderID > myLeaderID) {
+					System.out.println("New Leader: " + lastLeaderID);
+					Node.getInstance().setLeaderID(lastLeaderID);
+				}
+
+				Node.getInstance().setStatus(StatusType.RUNNING);
+				Node.getInstance().helloCon.signalAll();
+				break;
+			case "ELECTION":	
+				if (Node.getInstance().getStatus() == StatusType.RUNNING) {
+					Node.getInstance().setElectionMsg(jsonObject.getString("msg") + "," +
+	                          Node.getInstance().nodeID);
+					Node.getInstance().helloCon.signalAll();
+					Node.getInstance().setStatus(StatusType.WAITING);
+				} else if (Node.getInstance().getStatus() == StatusType.WAITING) {
+					String[] split = jsonObject.getString("msg").split(",");
+					boolean has = false;
+					for (String str: split) {
+						if (Integer.parseInt(str) == Node.getInstance().nodeID) {
+							has = true;
+							break;
+						}
+					}
+					if (has == true) {
+						System.out.println("Into Election");
+						Node.getInstance().setElectionMsg(jsonObject.getString("msg"));
+						Node.getInstance().setStatus(StatusType.ELECTING);
+						Node.getInstance().electCon.signalAll();
+					} else {
 						Node.getInstance().setElectionMsg(jsonObject.getString("msg") + "," +
 		                          Node.getInstance().nodeID);
+						Node.getInstance().helloCon.signalAll();
 						Node.getInstance().setStatus(StatusType.WAITING);
-					} else if (Node.getInstance().getStatus() == StatusType.WAITING) {
-						System.out.println("Into Election");
-		//				ElectionThread.setElectionMsg(jsonObject.getString("msg"));
-						Node.getInstance().setElectionMsg(jsonObject.getString("msg"));
-						//Node.getInstance().electCon.signalAll();
-						Node.getInstance().setStatus(StatusType.Electing);
 					}
-					break;
-				case "INFORMATION":
-					int leader = Integer.parseInt(jsonObject.getString("msg"));
+					
+				}
+				break;
+			case "INFORMATION":
+				int leader = Integer.parseInt(jsonObject.getString("msg"));
+				if (leader != Node.getInstance().getLeaderID()) {
 					Node.getInstance().setLeaderID(leader);
-					ElectionThread.setElectionMsg(null);
-					//Node.getInstance().helloCon.signalAll();
-					Node.getInstance().setStatus(StatusType.RUNNING);
 					System.out.println("New Leader: " + leader);
-					break;
-			}
-//		} finally {
-//			Node.getInstance().lock.unlock();
-//		}
+				}
+				Node.getInstance().setStatus(StatusType.RUNNING);
+				Node.getInstance().helloCon.signalAll();
+				break;
+		}
 		
 	}
 	

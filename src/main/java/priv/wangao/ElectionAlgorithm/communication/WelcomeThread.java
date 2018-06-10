@@ -23,8 +23,6 @@ public class WelcomeThread implements Runnable {
 			while (true) {
 				Socket socket = serverSocket.accept();
 				MySocket ms = new MySocket(socket);
-				//System.err.println("New RecvTask");
-				
 				RecvTask task = new RecvTask(ms);
 				ThreadPool.getInstance().add_tasks(task);
 			}

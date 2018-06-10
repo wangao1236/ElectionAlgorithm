@@ -7,6 +7,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang.Validate;
+
 import priv.wangao.ElectionAlgorithm.communication.ElectionThread;
 import priv.wangao.ElectionAlgorithm.communication.HelloThread;
 import priv.wangao.ElectionAlgorithm.communication.MessageQueueThread;
@@ -17,13 +19,14 @@ import priv.wangao.ElectionAlgorithm.util.XML;
 public class Node {
 	
 	private static final Node instance = new Node();
-	private String electionMsg = "";
+	private volatile String electionMsg = "";
 	private int leaderID;
 	private int nextID = -1;
 	
-	public Lock lock = new ReentrantLock();
+	public Lock lock = new ReentrantLock(true);
 	public Condition helloCon = lock.newCondition();
 	public Condition electCon = lock.newCondition();
+	public Condition mqCon = lock.newCondition();
 	public Boolean firstStart = true;
 	
 	public final int nodeAddrListSize;
@@ -32,7 +35,7 @@ public class Node {
 	public final String nodeIP;
 	public final int nodePort;
 	public final Server server;
-	private StatusType status;
+	private volatile StatusType status;
 	
 	@SuppressWarnings("unchecked")
 	private Node() {
@@ -45,7 +48,7 @@ public class Node {
 		this.nodeIP = split[0];
 		this.nodePort = Integer.parseInt(split[1]);
 		this.server = new Server(0);
-		this.leaderID = this.nodeAddrListSize-1;
+		this.leaderID = this.nodeID;
 		this.status = StatusType.RUNNING;
 	}	
 	
@@ -53,7 +56,7 @@ public class Node {
 		new Thread(new WelcomeThread()).start();
 		new Thread(new HelloThread()).start();
 		new Thread(new ElectionThread()).start();
-		//new Thread(new MessageQueueThread()).start();
+		new Thread(new MessageQueueThread()).start();
 	}
 	
 	public static Node getInstance() {
@@ -97,6 +100,9 @@ public class Node {
 		return this.electionMsg;
 	}
 	
+	public int getLeaderID() {
+		return this.leaderID;
+	}
 	public synchronized void setLeaderID(int ID) {
 		this.leaderID = ID;
 	}

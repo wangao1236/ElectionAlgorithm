@@ -15,6 +15,10 @@ import org.dom4j.io.SAXReader;
 public class XML {
 	private static String configPath = "src/main/resources/config.xml";
 	
+	public static void setConfigPath(String config) {
+		configPath = config;
+	}
+	
 	public Map<String, Object> nodeConf() {
 		Map<String, Object> conf = new HashMap<String, Object>();
 		SAXReader reader = new SAXReader();
@@ -29,7 +33,7 @@ public class XML {
 				ipportList.add(e.getText());
 			}
 			conf.put("nodeList", ipportList);
-			conf.put("nodeID", "2");//root.element("nodeID").getText());
+			conf.put("nodeID", root.element("nodeID").getText());
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

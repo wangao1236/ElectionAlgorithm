@@ -1,5 +1,5 @@
 package priv.wangao.ElectionAlgorithm.constant;
 
 public enum StatusType {
-	WAITING, RUNNING, Electing
+	WAITING, RUNNING, ELECTING
 }
