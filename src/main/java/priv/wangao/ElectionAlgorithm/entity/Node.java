@@ -7,8 +7,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.Validate;
-
 import priv.wangao.ElectionAlgorithm.communication.WelcomeThread;
 import priv.wangao.ElectionAlgorithm.communication.Thread.ElectionThread;
 import priv.wangao.ElectionAlgorithm.communication.Thread.HelloThread;
@@ -21,7 +19,6 @@ public class Node {
 	private static final Node instance = new Node();
 	private volatile String electionMsg = "";
 	private int leaderID;
-	private int nextID = -1;
 	
 	public Lock lock = new ReentrantLock(true);
 	public Condition helloCon = lock.newCondition();
@@ -35,6 +32,7 @@ public class Node {
 	public final String nodeIP;
 	public final int nodePort;
 	private volatile StatusType status;
+	private int lastNextID;
 	
 	@SuppressWarnings("unchecked")
 	private Node() {
@@ -48,6 +46,7 @@ public class Node {
 		this.nodePort = Integer.parseInt(split[1]);
 		this.leaderID = this.nodeID;
 		this.status = StatusType.RUNNING;
+		this.lastNextID = (this.nodeID + 1) % this.nodeAddrListSize;
 	}	
 	
 	public void start() {
@@ -65,11 +64,14 @@ public class Node {
 		return nodeAddrList.get(nodeID);
 	}
 	
-	public synchronized void setNextID(int ID) {
-		this.nextID = ID;
+	public synchronized void setLastNextID(int ID) {
+		this.lastNextID = ID;
+	}
+	public int getLastNextID() {
+		return this.lastNextID;
 	}
 	public int getNextID(int curID) {
-		return this.nextID == -1 ? (curID+1) % this.nodeAddrListSize:this.nextID;
+		return (curID + 1) % this.nodeAddrListSize;
 	}
 	
 	public String getAddrByID(int ID) {

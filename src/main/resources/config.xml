@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<nodeID>1</nodeID>
+	<nodeID>0</nodeID>
 	<nodeList><!-- nodes address -->
 		<ipport>127.0.0.1:8080</ipport>
 		<ipport>127.0.0.1:8081</ipport>

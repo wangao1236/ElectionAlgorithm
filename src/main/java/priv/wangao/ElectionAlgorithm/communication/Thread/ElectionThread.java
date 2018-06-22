@@ -3,11 +3,9 @@ package priv.wangao.ElectionAlgorithm.communication.Thread;
 import java.io.IOException;
 import java.net.Socket;
 
-import net.sf.json.JSONObject;
 import priv.wangao.ElectionAlgorithm.communication.MySocket;
 import priv.wangao.ElectionAlgorithm.communication.ThreadPool;
 import priv.wangao.ElectionAlgorithm.communication.basicTask.SendTask;
-import priv.wangao.ElectionAlgorithm.constant.MessageType;
 import priv.wangao.ElectionAlgorithm.constant.StatusType;
 import priv.wangao.ElectionAlgorithm.entity.Node;
 import priv.wangao.ElectionAlgorithm.util.JSON;
@@ -27,9 +25,11 @@ public class ElectionThread implements Runnable {
 			
 			Node.getInstance().lock.lock();
 			try {
-				System.err.println("Waiting for electing");
-				Node.getInstance().electCon.await();
-				System.err.println("Start electing");
+				while (Node.getInstance().getStatus() != StatusType.ELECTING) {
+					System.err.println("Waiting for electing");
+					Node.getInstance().electCon.await();
+					System.err.println("Start electing");
+				}
 			
 					
 				System.out.println("Start Electing : " + Node.getInstance().getElectionMsg());
@@ -50,12 +50,12 @@ public class ElectionThread implements Runnable {
 						MySocket ms = new MySocket(socket);
 						SendTask sendTask = new SendTask(ms, JSON.getInformationMsg(Integer.toString(leader)).toString());
 						ThreadPool.getInstance().add_tasks(sendTask);
-						Node.getInstance().electCon.await();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
+				Node.getInstance().electCon.await();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
